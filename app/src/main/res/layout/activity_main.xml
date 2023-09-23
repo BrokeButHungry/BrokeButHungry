@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".MainActivity">
+
+<TextView
+    android:id="@+id/pageTitleTextView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Broke But Hungry Demo"
+    android:textSize="24sp"
+    android:textStyle="bold"
+    android:layout_centerHorizontal="true"
+    android:layout_alignParentTop="true"
+    android:layout_marginBottom="10dp"
+    android:layout_marginTop="10dp"/>
+
+    <EditText
+        android:id="@+id/searchEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:hint="Search A Recipe..." />
+
+    <Button
+    android:id="@+id/searchButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Search"
+    android:layout_below="@id/searchEditText"
+    android:layout_alignParentEnd="true"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="16dp"/>
+
+<TextView
+    android:id="@+id/resultsTextView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/searchButton"
+    android:layout_marginTop="16dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"/>
+
+    <ImageView
+        android:id="@+id/recipeImageView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:layout_gravity="center_horizontal"/>
+
+
+</RelativeLayout>
