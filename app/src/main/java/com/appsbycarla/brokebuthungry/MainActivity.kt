@@ -12,6 +12,23 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
+/*
+09.09.23 Comments by Carla Ramos.
+Algorithm:
+1. Initialize UI elements, including an EditText for user input, a Button for initiating a search, and a TextView for displaying search results.
+2. Set a click listener for the search button, which triggers an API request when clicked.
+3. In the background thread (AsyncTask FetchRecipesTask):
+    - Construct a URL for an API request using user input and API credentials.
+    - Make an HTTP GET request to the API.
+    - Read and collect the response data, returning it as a string.
+    - Handle exceptions, such as network errors or invalid URLs.
+4. Update the UI on the main thread (in onPostExecute):
+    - Check if the API response is not empty.
+    - If not empty, parse and display the recipe information in the TextView.
+    - If empty, display a "No results found" message in the TextView.
+5. Display recipe information in the TextView by parsing a JSON response, extracting data, and formatting it.
+ */
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var searchEditText: EditText
@@ -21,14 +38,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Set the content view to the activity's layout defined in activity_main.xml
         setContentView(R.layout.activity_main)
 
+        // Initialize references to UI elements using their IDs
         searchEditText = findViewById(R.id.searchEditText)
         searchButton = findViewById(R.id.searchButton)
         resultsTextView = findViewById(R.id.resultsTextView)
 
+        // Set a click listener for the searchButton
         searchButton.setOnClickListener {
+            // Get the user's query from the searchEditText
             val query = searchEditText.text.toString()
+            // Check if the query is not empty
             if (query.isNotEmpty()) {
                 // Clear previous results
                 resultsTextView.text = "Searching..."
@@ -77,7 +100,6 @@ class MainActivity : AppCompatActivity() {
                     while (reader.readLine().also { line = it } != null) {
                         response.append(line)
                     }
-
                     // Close the reader.
                     reader.close()
 
@@ -88,7 +110,6 @@ class MainActivity : AppCompatActivity() {
                 // Handle exceptions, such as network errors or invalid URLs.
                 e.printStackTrace()
             }
-
             // If there was an error or no data was received, return an empty string.
             return ""
         }
@@ -104,7 +125,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun displayResults(jsonResult: String) {
         try {
