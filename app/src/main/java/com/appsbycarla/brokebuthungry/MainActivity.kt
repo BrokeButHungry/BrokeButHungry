@@ -1,16 +1,27 @@
 package com.appsbycarla.brokebuthungry
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.AsyncTask
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+
 
 /*
 09.09.23 Comments by Carla Ramos.
@@ -33,7 +44,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var searchEditText: EditText
     private lateinit var searchButton: Button
-    private lateinit var resultsTextView: TextView
+    private lateinit var recipeNameTextView: TextView
+    private lateinit var caloriesTextView: TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         // Initialize references to UI elements using their IDs
         searchEditText = findViewById(R.id.searchEditText)
         searchButton = findViewById(R.id.searchButton)
-        resultsTextView = findViewById(R.id.resultsTextView)
+        recipeNameTextView = findViewById(R.id.recipeNameTextView)
 
         // Set a click listener for the searchButton
         searchButton.setOnClickListener {
@@ -54,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             // Check if the query is not empty
             if (query.isNotEmpty()) {
                 // Clear previous results
-                resultsTextView.text = "Searching..."
+                recipeNameTextView.text = "Searching..."
 
                 // Perform the API request
                 FetchRecipesTask().execute(query)
@@ -121,50 +133,51 @@ class MainActivity : AppCompatActivity() {
                 displayResults(result)
             } else {
                 // If there are no results, display a message in the resultsTextView.
-                resultsTextView.text = "No results found."
+                recipeNameTextView.text = "No results found."
             }
         }
     }
 
     private fun displayResults(jsonResult: String) {
+        // Locate the TextView elements in your activity
+        val recipeNameTextView = findViewById<TextView>(R.id.recipeNameTextView)
+
         try {
-            // Parse the incoming JSON string into a JSONObject.
+            // Parse the incoming JSON string into a JSONObject
             val jsonObject = JSONObject(jsonResult)
 
-            // Get the "hits" array from the JSONObject.
+            // Get the "hits" array from the JSONObject
             val hitsArray = jsonObject.getJSONArray("hits")
 
-            // Create an ArrayList to store recipe information.
-            val recipes = ArrayList<String>()
+            // Create a StringBuilder to store all recipe names and calories
+            val recipeInfo = StringBuilder()
 
-            // Loop through each item in the "hits" array.
+            // Loop through each item in the "hits" array
             for (i in 0 until hitsArray.length()) {
-                // Get the "recipe" object for the current item.
+                // Get the "recipe" object for the current item
                 val recipeObject = hitsArray.getJSONObject(i).getJSONObject("recipe")
 
-                // Extract relevant data from the "recipe" object.
+                // Extract relevant data from the "recipe" object
                 val recipeLabel = recipeObject.getString("label")
                 val recipeCalories = recipeObject.getDouble("calories")
 
-
-                // Create a string containing recipe information.
-                val recipeInfo = "$recipeLabel - Calories: $recipeCalories"
-
-                // Add the recipe information to the ArrayList.
-                recipes.add(recipeInfo)
+                // Append the recipe name and calories to the recipeInfo StringBuilder
+                recipeInfo.append("$recipeLabel\nCalories: $recipeCalories\n\n")
             }
 
-            // Join the recipe information strings with line breaks ("\n").
-            val resultText = recipes.joinToString("\n")
+            // Set the combined recipe names and calories in the recipeNameTextView
+            recipeNameTextView.text = recipeInfo.toString()
 
-            // Set the resulting text in a TextView (resultsTextView).
-            resultsTextView.text = resultText
+            // Set the text color to white
+            recipeNameTextView.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+
+            // Adjust the text size for recipe name (if needed)
+            recipeNameTextView.textSize = resources.getDimension(R.dimen.recipe_label_text_size)
         } catch (e: Exception) {
-            // Handle exceptions, such as JSON parsing errors.
+            // Handle exceptions, such as JSON parsing errors
             e.printStackTrace()
-
-            // Display an error message in the TextView if an exception occurs.
-            resultsTextView.text = "Error parsing JSON."
+            // Display an error message in the TextView if an exception occurs
+            recipeNameTextView.text = "Error parsing JSON."
         }
     }
 }
